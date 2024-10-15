@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор паролей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .password {
+            margin-top: 20px;
+            font-weight: bold;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Генератор паролей</h2>
+    <input type="number" id="length" placeholder="Длина пароля" min="1" required>
+    <button onclick="generatePassword()">Сгенерировать пароль</button>
+    <div class="password" id="passwordDisplay"></div>
+</div>
+
+<script>
+    async function generatePassword() {
+        const length = document.getElementById("length").value;
+        const response = await fetch('http://localhost:8080/generate-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ length: parseInt(length) })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById("passwordDisplay").textContent = `Сгенерированный пароль: ${data.password}`;
+        } else {
+            document.getElementById("passwordDisplay").textContent = 'Ошибка при генерации пароля.';
+        }
+    }
+</script>
+
+</body>
+</html>
