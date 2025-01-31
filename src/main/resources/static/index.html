@@ -4,115 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор паролей</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            position: relative;
         }
         .container {
-            background: linear-gradient(135deg, #8e2de2, #4a00e0);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            width: 320px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
             text-align: center;
-            color: white;
-        }
-        .input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
         }
         input[type="number"] {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            outline: none;
-            font-size: 16px;
-            text-align: center;
-            -moz-appearance: textfield;
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
-            background: linear-gradient(135deg, #ff512f, #dd2476);
+            background-color: #5cb85c;
             color: white;
-            padding: 12px;
+            padding: 10px;
             border: none;
-            border-radius: 10px;
+            border-radius: 4px;
             cursor: pointer;
             width: 100%;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 10px;
         }
         button:hover {
-            background: linear-gradient(135deg, #dd2476, #ff512f);
-        }
-        .password-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
+            background-color: #4cae4c;
         }
         .password {
+            margin-top: 20px;
             font-weight: bold;
-            word-break: break-word;
-            color: #fff;
-            filter: blur(5px);
-            cursor: pointer;
-            transition: filter 0.3s ease;
-            word-wrap: break-word;
-            text-align: center;
-        }
-        .password:hover {
-            filter: blur(0);
-        }
-        .copy-button {
-            background: transparent;
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            margin-left: 20px;
-            width: 45px;
-        }
-        .copy-button:hover {
-            color: #ff512f;
-        }
-        .copy-button.hidden {
-            display: none;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .toast.show {
-            opacity: 1;
+            word-break: break-all;
         }
     </style>
 </head>
@@ -120,28 +52,14 @@
 
 <div class="container">
     <h2>Генератор паролей</h2>
-    <div class="input-container">
-        <input type="number" id="length" placeholder="Длина пароля" min="1" max="25" required>
-    </div>
+    <input type="number" id="length" placeholder="Длина пароля" min="1" required>
     <button onclick="generatePassword()">Сгенерировать пароль</button>
-    <div class="password-container">
-        <div class="password" id="passwordDisplay" onmouseover="toggleBlur()" onmouseout="toggleBlur()">Нажмите, чтобы показать</div>
-        <button class="copy-button hidden" id="copyButton" onclick="copyPassword()"><i class="fas fa-copy"></i></button>
-    </div>
+    <div class="password" id="passwordDisplay"></div>
 </div>
-
-<div id="toast" class="toast">Пароль скопирован!</div>
 
 <script>
     async function generatePassword() {
         const length = document.getElementById("length").value;
-
-        // Проверка на максимальную длину пароля
-        if (length > 25) {
-            alert("Длина пароля не может превышать 25 символов.");
-            return;
-        }
-
         const response = await fetch('http://localhost:8080/generate-password', {
             method: 'POST',
             headers: {
@@ -152,32 +70,10 @@
 
         if (response.ok) {
             const data = await response.json();
-            const passwordDisplay = document.getElementById("passwordDisplay");
-            passwordDisplay.textContent = data.password;
-            document.getElementById("copyButton").classList.remove("hidden");
+            document.getElementById("passwordDisplay").textContent = `Сгенерированный пароль: ${data.password}`;
         } else {
             document.getElementById("passwordDisplay").textContent = 'Ошибка при генерации пароля.';
         }
-    }
-
-    function toggleBlur() {
-        const passwordDisplay = document.getElementById("passwordDisplay");
-        passwordDisplay.style.filter = passwordDisplay.style.filter === "blur(0px)" ? "blur(5px)" : "blur(0px)";
-    }
-
-    function copyPassword() {
-        const password = document.getElementById("passwordDisplay").textContent;
-        navigator.clipboard.writeText(password).then(() => {
-            showToast();
-        });
-    }
-
-    function showToast() {
-        const toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(() => {
-            toast.classList.remove("show");
-        }, 3000); // Скрыть через 3 секунды
     }
 </script>
 
