@@ -14,10 +14,15 @@ public class PasswordController {
 
     @PostMapping("/generate-password")
     public ResponseEntity<PasswordResponse> generatePassword(@RequestBody PasswordRequest request) {
-        // Генерация пароля с использованием PasswordGenerator
-        String password = PasswordGenerator.generate(request.length());
+        // Генерация пароля с использованием выбранных параметров
+        String password = PasswordGenerator.generate(
+                request.length(),
+                request.useUpperCase(),
+                request.useLowerCase(),
+                request.useNumbers(),
+                request.useSymbols()
+        );
         // Возвращаем сгенерированный пароль в ответе
         return ResponseEntity.ok(new PasswordResponse(password));
     }   
 }
-
