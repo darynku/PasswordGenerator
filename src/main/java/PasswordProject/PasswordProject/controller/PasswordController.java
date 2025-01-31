@@ -18,6 +18,6 @@ public class PasswordController {
         String password = PasswordGenerator.generate(request.length());
         // Возвращаем сгенерированный пароль в ответе
         return ResponseEntity.ok(new PasswordResponse(password));
-    }
+    }   
 }
 
